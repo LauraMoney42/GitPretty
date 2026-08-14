@@ -70,6 +70,67 @@ that reader came to try it. A library README that opens with three paragraphs of
 philosophy loses to the one that opens with a command. Same craft, opposite
 order.
 
+## How it works
+
+The same kind of diagram the skill writes into your repo, drawn for itself.
+
+```mermaid
+flowchart LR
+    subgraph S["Survey"]
+        Audit[audit.sh]
+        Source[Read the source]
+    end
+
+    subgraph P["Pick a shape"]
+        Lib[Library or CLI]
+        App[App or portfolio]
+        Show[Showcase, no source]
+    end
+
+    subgraph B["Build"]
+        Media[Hero GIF and screenshots]
+        Arch[Architecture diagram]
+        Furn[GitHub furniture]
+    end
+
+    subgraph V["Verify, before anything is pushed"]
+        Check[Captions, numbers, secrets]
+        Live[Force-reload the live page]
+    end
+
+    Audit --> Source
+    Source --> Lib
+    Source --> App
+    Source --> Show
+    Lib --> Media
+    App --> Media
+    Show --> Media
+    Media --> Arch
+    Arch --> Furn
+    Furn --> Check
+    Check --> Live
+
+    style S fill:#635BFF22,stroke:#635BFF
+    style P fill:#FD506822,stroke:#FD5068
+    style B fill:#4CCC9322,stroke:#4CCC93
+    style V fill:#FFBE4F22,stroke:#FFBE4F
+```
+
+| Stage | What happens |
+|---|---|
+| `audit.sh` | Read-only survey of what every repo is missing. You pick the targets |
+| Read the source | Entry point, constants, tests, and comments. Never the stale docs |
+| Pick a shape | Four README orders, chosen by why a reader arrives |
+| Hero GIF and screenshots | ffmpeg recipes, then a contact sheet so no caption lands on the wrong file |
+| Architecture diagram | Mermaid, a component table, and decisions with what broke when you tried the obvious thing |
+| GitHub furniture | Description, topics, license, social preview, releases |
+| Captions, numbers, secrets | Every claim checked against source, every secret grepped for |
+| Force-reload the live page | Mermaid breaks only on GitHub, and GitHub caches the broken version |
+
+Node labels stay plain and the descriptions live in the table, because `<br/>`
+inside a mermaid node renders as run-together text on GitHub. The skill enforces
+that rule on your diagrams; this one follows it too.
+
 ## Audit mode
 
 Before touching anything, survey what is actually missing:
