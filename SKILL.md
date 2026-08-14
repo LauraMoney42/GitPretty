@@ -1,144 +1,135 @@
 ---
 name: gitpretty
-description: Build a public "showcase" repo that proves a private app is real, without publishing its source. Produces AppName-public with a hero GIF, captioned screenshots, a mermaid architecture diagram, and honest engineering decisions, then ships it with gh. Use this whenever the user wants to show off, demo, publish, or share a project they cannot open-source: "make a public repo for my app", "portfolio repo", "showcase repo", "landing page for my project", "something to send a recruiter or hiring manager", "prove I built this without giving away the code", "write a README that sells this app", or when they mention a `-public` repo. Also use it when they ask for a demo GIF or screenshot table for a README, or an architecture diagram for a project page.
+description: Make a git repo look like someone is proud of it. Writes the README, builds a hero GIF or screenshot set, draws a mermaid architecture diagram, and fills in the GitHub furniture (description, topics, license, social preview). Handles four repo shapes: an installable library or CLI, an open-source app, a personal or portfolio project, and a private app that needs a public showcase page with no source. Use this whenever the user wants a repo to look better or read better: "prettify my repo", "write a README for this", "my repo looks bare", "clean up my GitHub", "add a demo GIF", "make an architecture diagram for the README", "add badges", "something I can send a recruiter", "showcase repo", "portfolio repo", or any `-public` repo. Also use it when they ask to audit or survey several repos at once for missing READMEs, descriptions, or topics.
 ---
 
 # GitPretty
 
-Build a public repo a hiring manager can skim in two minutes that proves the app
-is real and that the author can explain how it works, without publishing the
-source. The private repo stays private. This one is a landing page.
+Make a repo look like someone is proud of it.
 
-Budget about 45 minutes once screenshots exist. Most of that is media prep and
-verification, not writing.
+A repo is read in a fixed order, and prettifying it means making each step of
+that order do its job:
 
-## The shape of the job
+1. **The GitHub card**: name, description, topics. This is all a browser or a
+   search result shows. An empty description is the single most common reason a
+   real project reads as abandoned
+2. **The hero**: the first image on the page, before any scrolling
+3. **The first screen of README**: what it is, whether it works, how to start
+4. **One prose section, read closely**: usually architecture, sometimes usage
 
-Reviewers spend two minutes here. They look at the hero GIF, skim the
-screenshots, and read exactly one prose section closely: architecture. Everything
-below optimizes for that reality. Front-load the proof, back-load the
-engineering, and make every checkable claim true, because the one section they
-read carefully is the one where a wrong number costs the most.
+Everything below serves those four. Budget 20 minutes for a light pass on an
+existing repo, about 45 minutes when media has to be built from scratch.
 
-## Step 0: is publishing allowed?
+## Step 1: pick the mode
 
-Skip only if the project is entirely the user's own. For anything built for an
-employer or client, the screenshots, architecture, and product decisions are
-usually theirs. Ask the user directly whether they have permission, and if the
-answer is unclear, say so rather than proceeding. A showcase repo that causes
-trouble is worse than no showcase repo.
+Ask, or infer from what the user pointed at.
 
-Three middle grounds when the answer is no or uncertain:
+| Mode | When | Where to go |
+|---|---|---|
+| **Audit** | Several repos at once, "clean up my GitHub" | Run `scripts/audit.sh`, then pick targets with the user |
+| **Prettify** | One existing repo, source is public | Step 2, then the matching README recipe |
+| **Showcase** | Private app, source must stay private | Step 2, but read `references/readme-showcase.md` and take the permission gate seriously |
 
-- Describe the problem shape and their decisions without naming the employer,
-  showing their UI, or reproducing their data model
-- Rebuild a small standalone demo of the interesting technique and publish that,
-  which is theirs outright
-- Keep the repo private and share the link directly with interviewers
+Audit mode is a survey, not a change. It reports which repos have no
+description, no topics, no license, or a thin README, so the user can choose
+where the effort goes. Do not start editing repos off the back of an audit
+without the user picking them.
 
-## Step 1: gather source material
+## Step 2: pick the README shape
 
-Ask for or locate:
+The section order is not universal. It depends on why someone landed on the
+repo, and getting this wrong is the most common way a decent README still fails.
 
-- The private repo path, so architecture can be written from the code
-- Existing screenshots (App Store assets, simulator captures, browser grabs)
-- A screen recording, if one exists
-- Current status: shipped, in review, internal only, or not released
+| Reader arrives wanting to... | Shape | Reference |
+|---|---|---|
+| Install and use it | Library, package, CLI, MCP server | `references/readme-library.md` |
+| Run it, or see what it does | App or tool, source visible | `references/readme-app.md` |
+| Judge whether you can build | Personal or portfolio project | `references/readme-app.md`, portfolio variant |
+| Believe an app is real without seeing code | Private app, public landing page | `references/readme-showcase.md` |
 
-Nothing new needs to be shot. Reuse what exists.
+The split that matters most: **someone who came to install something wants the
+quickstart above the fold**, and a hero GIF that pushes `pip install` below the
+fold actively costs adoption. **Someone who came to judge** wants proof first,
+because they will not scroll unless the first screen convinces them.
 
-## Step 2: build the media
+Read the matching reference file before writing. Each one carries a section
+order, the markup that renders correctly on GitHub, and notes on what earns its
+place.
 
-Layout:
+## Step 3: read the repo before writing about it
 
-```
-AppName-public/
-  README.md
-  .gitattributes          # *.png *.gif *.mp4 binary
-  media/
-    appname-demo.gif      # hero, autoplays in the README
-    appname-demo.mp4      # full quality, linked not embedded
-  screenshots/
-    gestures.png love.png nope.png keep.png filters.png
-```
+Pull every number, command, and API name out of the source. Docs go stale
+quietly. In one real pass, an architecture doc was five months behind on a
+retention window: it said 24 hours, `Constants.swift` said 35 days. Publishing
+the doc's number would have put a confident, checkable, wrong claim in the one
+section a reviewer reads closely.
 
-Name screenshots for what they show, not `01-`, `02-`. Humans read this README
-and the filenames land in alt text.
+Worth reading before writing:
 
-All ffmpeg and sips commands live in `references/media.md`. Read that file before
-encoding anything. It covers the contact sheet, the mp4 and GIF encodes, the
-no-recording slideshow path, and the frame-normalization step that GIF builds
-silently need.
+- The entry point, to describe what actually happens on start
+- Config and constants files, for every number that will appear on the page
+- Existing tests, which document the real interface better than most READMEs
+- Comments explaining why something changed. Grep for framework names and read
+  what past-them wrote; this is usually the best material on the page
+- `package.json`, `Cargo.toml`, `pyproject.toml`, or equivalent, for the real
+  install name and version
 
-Two things matter more than the exact flags:
+If the repo already has a README, keep what is accurate. Rewriting a working
+README from scratch loses institutional knowledge and annoys the person who
+wrote it.
 
-**Find a clean segment before encoding.** Recordings almost always open on a
-permission alert and end on failed-thumbnail placeholder cards. Build a contact
-sheet, look at it, and pick the good stretch first.
+## Step 4: media
 
-**A relative `.mp4` path in a GitHub README does not produce a player.** The GIF
-is the visible hero; the mp4 is a link underneath it. Do not fight this:
+Optional for a library, close to mandatory for anything with a UI. A repo with a
+screenshot reads as finished; the same repo without one reads as a work in
+progress, even when the code is identical.
+
+All ffmpeg and sips commands live in `references/media.md`. Read that file
+before encoding. It covers contact sheets, the mp4 and GIF encodes, the
+slideshow path for when there is no recording, and caption verification.
+
+Three things that matter more than the flags:
+
+**A CLI deserves a terminal GIF.** Record an actual session with
+[`vhs`](https://github.com/charmbracelet/vhs) or `asciinema`. A terminal
+recording of a tool doing its job is the highest-value-per-byte asset a library
+README can have.
+
+**A relative `.mp4` in a GitHub README does not produce a player.** The GIF is
+the visible hero; the mp4 is a link underneath it. Do not fight this:
 
 ```html
 <p align="center">
-  <img src="media/app-demo.gif" width="270" alt="...">
+  <img src="media/demo.gif" width="270" alt="...">
 </p>
-<p align="center"><a href="media/app-demo.mp4"><b>▶ Watch the full 24-second demo</b></a></p>
+<p align="center"><a href="media/demo.mp4"><b>▶ Watch the full 24-second demo</b></a></p>
 ```
+
+**Verify what is in each file before captioning it.** Timestamped filenames
+(`Simulator Screenshot - ... 16.48.50.png`) say nothing about content, and two
+adjacent captures are often the same screen at different scroll positions.
+Contact sheet the final set and read it. A caption on the wrong screenshot is
+the kind of error a reviewer catches and the author never does.
 
 Keep the GIF under about 3 MB, since it loads on every page view, and the mp4
 under about 2 MB.
 
-## Step 3: verify what is actually in each file before captioning it
+## Step 5: the architecture diagram
 
-This is the single most likely error in the whole process, and it is the kind a
-reviewer notices and the author does not. Timestamped filenames
-(`Simulator Screenshot - ... 16.48.50.png`) say nothing about content, and two
-adjacent captures are often the same screen at different scroll positions.
+Worth adding whenever the repo has more than one moving part. It is the section
+a technical reader actually reads, and a diagram is faster to trust than three
+paragraphs claiming the same thing.
 
-Contact sheet the **final** screenshot set, in filename order, and actually read
-it before writing a single caption. The command is in `references/media.md`.
-
-If two screenshots are near-duplicates, cut one or write the caption around the
-part that differs.
-
-## Step 4: write the README
-
-Use the section order and markup in `references/readme-template.md`. Read that
-file when it is time to write.
-
-The order is: title and tagline, attribution, badges, status line, demo, the
-problem, the app (screenshot tables), the hard constraint, architecture,
-roadmap, about.
-
-Two sections carry most of the weight:
-
-**The hard constraint.** Every app has one thing it could not do. Explaining
-that limit, and how the UI handles it honestly, is the most credible section on
-the page. It is also the one a reviewer cannot get from a screenshot.
-
-**Architecture.** This is where the reviewer actually reads. It needs a mermaid
-diagram, a service responsibility table with one line per service, and two to
-four decisions written as: what was done, what the obvious alternative was, and
-what broke when it was tried. Concrete beats impressive. A real bug that got
+Three parts: a mermaid diagram, a table with one line per component, and two to
+four decisions written as what was done, what the obvious alternative was, and
+what broke when it was tried. Concrete beats impressive; a real bug that got
 fixed is worth more than any adjective. Include what was deliberately not built,
 which reads as judgment rather than omission.
 
-### Write from the code, not from the docs
-
-Pull every number and API name out of the source before it goes on the page.
-Project overview docs go stale quietly. In one real pass, an architecture doc was
-five months behind on a retention window: it said 24 hours, `Constants.swift`
-said 35 days. Publishing the doc's number would have put a confident, checkable,
-wrong claim in the one section a reviewer reads closely.
-
-The best material is usually already in the code as a comment explaining why
-something changed. Grep for the framework names and read what past-them wrote.
-
 ### Mermaid gotchas, all hit for real
 
-These render fine locally and only break on GitHub, so they are worth knowing
-before drawing rather than after:
+These render correctly in a local markdown preview and only break on GitHub,
+which is why they are worth knowing before drawing rather than after:
 
 - `<br/>` and `<i>` inside node labels render as run-together text. Keep node
   names plain and put descriptions in a table underneath
@@ -154,17 +145,17 @@ Working shape:
 
 ```
 flowchart LR
-    subgraph V["Views"]
-        Deck[Sweep deck]
+    subgraph V["Interface"]
+        A[CLI]
     end
-    subgraph S["Services, sole owner of system access"]
-        Lib[PhotoLibrary]
+    subgraph S["Core, sole owner of state"]
+        B[Scheduler]
     end
-    subgraph F["Platform frameworks"]
-        PK[PhotoKit]
+    subgraph F["Platform"]
+        C[SQLite]
     end
-    Deck --> Lib
-    Lib --> PK
+    A --> B
+    B --> C
 
     style V fill:#635BFF22,stroke:#635BFF
     style S fill:#4CCC9322,stroke:#4CCC93
@@ -172,42 +163,52 @@ flowchart LR
 ```
 
 The `22` suffix on each hex is alpha, giving tinted fills that stay readable in
-both light and dark themes. Pull the colors from the app's own palette so the
-page looks like the product.
+both light and dark themes. Pull the colors from the project's own palette so
+the page looks like the product.
 
-## Step 5: what must not ship
+## Step 6: the GitHub furniture
 
-Check for these before the first commit, since a public repo's history keeps
-whatever lands in it:
+The README is not the whole repo. `references/repo-polish.md` covers the
+surfaces outside it: description and topics, license, social preview image,
+release tags, and the About panel. Read it before finishing.
 
-- Source, even snippets long enough to reconstruct anything
-- Build commands, signing setup, `project.yml`, team IDs, bundle identifiers
-- Internal hostnames, dashboard links, ticket numbers, coworker names
-- Anything copied verbatim from the private repo's overview doc, which contains
-  file trees and build steps. Write *from* it, do not copy it
-- Screenshots with real personal data. Use a synthetic dataset and say so in the
-  README. For a health, finance, or messaging app this is not optional
-
-## Step 6: ship it
+The highest-value item by far is the repo description, because it is the only
+text that follows the repo into search results, profile pages, and every link
+someone shares. Setting one takes ten seconds:
 
 ```bash
-mkdir -p AppName-public/{media,screenshots}
-cd AppName-public
-printf '*.png binary\n*.gif binary\n*.mp4 binary\n' > .gitattributes
-git init -b main && git add -A && git commit -m "Add AppName showcase page"
+gh repo edit OWNER/REPO --description "One line: what it is and who it is for."
 ```
 
-Prove no source leaked before the push:
+## Step 7: what must not ship
+
+Check before the first commit, since a public repo's history keeps whatever
+lands in it. This matters most in showcase mode, but a secret committed to any
+repo is a secret published:
+
+- Credentials, tokens, `.env` files, signing keys, or anything matching
+  `api[_-]?key`. Grep before pushing
+- Internal hostnames, dashboard links, ticket numbers, coworker names
+- Screenshots containing real personal data. Use a synthetic dataset and say so
+  in the README. For a health, finance, or messaging app this is not optional
+
+In showcase mode, additionally: no source at all, no build commands, no signing
+setup, no team IDs or bundle identifiers, and nothing copied verbatim from a
+private overview doc, since those contain file trees and build steps. Write
+*from* it, do not copy it. Prove the repo is clean before pushing:
 
 ```bash
 git ls-files | grep -Ev '\.(png|gif|mp4|md)$|\.gitattributes'
 ```
 
-That prints nothing if the repo is clean. If it prints anything, look at each
-file before continuing.
+That prints nothing if only media and markdown are staged.
 
-Creating a public repo publishes it, so confirm with the user before running
-this rather than after:
+## Step 8: ship and look at it
+
+Committing to an existing repo is the user's call, and creating a public repo
+publishes it, so confirm before running either rather than after.
+
+For a new showcase repo:
 
 ```bash
 gh repo create AppName-public --public --source=. --remote=origin --push \
@@ -216,33 +217,35 @@ gh repo create AppName-public --public --source=. --remote=origin --push \
 
 Then open the live page and actually look at it. Every mermaid bug listed above
 rendered correctly as local markdown and only appeared on GitHub. Scroll the
-whole README: hero, every screenshot, the diagram, the tables, the end.
+whole README: hero, every image, the diagram, the tables, the end.
 
 ## Checklist
 
-Work through this at the end. Each line is something that has actually gone
-wrong before.
+Each line is something that has actually gone wrong before.
 
-- [ ] Confirmed the user is allowed to publish it
-- [ ] Contact sheeted the recording, picked a segment with no permission alerts
-      or placeholder cards
-- [ ] mp4 under 2 MB, GIF under 3 MB, or a slideshow GIF built from stills
-- [ ] Screenshots downsized and renamed for what they show
-- [ ] Contact sheeted the final set and confirmed every caption matches its file
-- [ ] Every number and API name verified against the source, not the docs
-- [ ] README has all eleven parts in order
-- [ ] Mermaid: `flowchart LR`, plain node labels, no single-node subgraphs,
-      descriptions in a table
-- [ ] README states the source is private and offers a walkthrough
-- [ ] `git ls-files` shows no code
-- [ ] User confirmed, then `gh repo create --public --source=. --push`
+- [ ] Mode picked, and in showcase mode, permission to publish confirmed
+- [ ] README shape matches why a reader arrives
+- [ ] Every number and API name verified against source, not docs
+- [ ] Install or quickstart command copy-pasteable and actually tried
+- [ ] Media under budget: GIF 3 MB, mp4 2 MB, images 400 KB each
+- [ ] Contact sheeted the final image set, every caption matches its file
+- [ ] Mermaid: `flowchart LR`, plain node labels, no single-node subgraphs
+- [ ] No secrets, no internal names, no real personal data
+- [ ] Repo description and topics set
+- [ ] User confirmed, then committed and pushed
 - [ ] Loaded the live page, force-reloaded, scrolled the entire README
-- [ ] Noted the follow-up: swap the status line for the store link on approval
 
 ## Reference files
 
 - `references/media.md`: every ffmpeg and sips command. Contact sheets, mp4 and
-  GIF encodes, the slideshow path for when there is no recording, and caption
-  verification. Read before encoding.
-- `references/readme-template.md`: the section-by-section README skeleton with
-  working HTML for the hero, badges, and screenshot tables. Read before writing.
+  GIF encodes, terminal recordings, the slideshow path for when there is no
+  recording, and caption verification. Read before encoding.
+- `references/readme-library.md`: README shape for anything installable.
+  Packages, CLIs, MCP servers.
+- `references/readme-app.md`: README shape for an app or tool with visible
+  source, plus the portfolio-project variant.
+- `references/readme-showcase.md`: README shape for a private app's public
+  landing page, plus the permission gate.
+- `references/repo-polish.md`: everything outside the README. Description,
+  topics, license, social preview, releases, About panel.
+- `scripts/audit.sh`: survey many repos at once and report what each is missing.

@@ -1,6 +1,6 @@
 <h1 align="center">GitPretty</h1>
 
-<p align="center"><i>A Claude Code skill that turns a private app into a public repo a hiring manager will actually read.</i></p>
+<p align="center"><i>A Claude Code skill that makes a git repo look like someone is proud of it.</i></p>
 
 <p align="center">
   Built by <a href="https://github.com/LauraMoney42"><b>Laura Money</b></a>
@@ -8,9 +8,9 @@
 
 <p align="center">
   <img alt="Type: Claude Code skill" src="https://img.shields.io/badge/type-Claude%20Code%20skill-635BFF?style=flat-square">
-  <img alt="Install: copy one folder" src="https://img.shields.io/badge/install-one%20folder-4CCC93?style=flat-square">
-  <img alt="Dependencies: ffmpeg, gh" src="https://img.shields.io/badge/deps-ffmpeg%20%2B%20gh-FFBE4F?style=flat-square">
-  <img alt="Time: ~45 minutes" src="https://img.shields.io/badge/time-~45%20min-1c1c1e?style=flat-square">
+  <img alt="Install: one folder" src="https://img.shields.io/badge/install-one%20folder-4CCC93?style=flat-square">
+  <img alt="Repo shapes: 4" src="https://img.shields.io/badge/repo%20shapes-4-FD5068?style=flat-square">
+  <img alt="Deps: ffmpeg + gh" src="https://img.shields.io/badge/deps-ffmpeg%20%2B%20gh-FFBE4F?style=flat-square">
 </p>
 
 ---
@@ -20,72 +20,91 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/LauraMoney42/PhotoHoarder-public"><b>See the full worked example: PhotoHoarder-public</b></a><br>
-  <sub>Those five screens are the screenshot set from a real showcase repo built this way.</sub>
+  <a href="https://github.com/LauraMoney42/PhotoHoarder-public"><b>See a finished example: PhotoHoarder-public</b></a><br>
+  <sub>Those five screens are the screenshot set from a real repo built this way.</sub>
 </p>
 
 ---
 
 ## The problem
 
-You built something good and you cannot show the code. It is under NDA, it is a
-client's, or it is a product you intend to sell. So the work sits in a private
-repo where nobody can see it, and your portfolio says "ask me about it."
+Good code sits in bare repos. No description, no README past the title, no
+screenshot, no license. The work is real and the page says nothing, so anyone who
+lands there closes the tab.
 
-The usual fix is a public repo with a thin README, which reads as an abandoned
-side project. What a reviewer actually needs is proof the thing is real and
-evidence you can explain how it works. That is a specific document, and it has a
-specific shape.
+Writing a good README is not hard, but it is fiddly and easy to get subtly
+wrong, and the mistakes are invisible to the person who made them. A caption on
+the wrong screenshot. A number copied from a doc that went stale five months ago.
+A mermaid diagram that renders locally and breaks on GitHub. An install command
+that fails on line one.
 
 ## What it does
 
-Run it against a private project and it walks the whole job:
+Point it at a repo and it does the whole job: picks the right README shape,
+writes it from the source rather than from stale docs, builds a hero GIF or
+screenshot set, draws an architecture diagram, and fills in the GitHub furniture.
 
-1. **Permission gate.** Asks whether you are allowed to publish, and offers three
-   middle grounds if the answer is unclear
-2. **Media.** Builds a hero GIF and a linked mp4 from an existing screen
-   recording, or a slideshow GIF from stills when there is no recording
-3. **Verification.** Contact sheets your screenshots so no caption ends up
-   describing the wrong screen
-4. **README.** Eleven sections in a fixed order, front-loading the proof and
-   back-loading the engineering
-5. **Ship.** Leak check, then `gh repo create`, then a pass over the live page
+A repo is read in a fixed order, and the skill works down it:
 
-The output is an `AppName-public` repo containing media, screenshots, and a
-README. No source, ever.
+1. **The GitHub card** (name, description, topics), which is all a search result
+   shows
+2. **The hero**, the first image before any scrolling
+3. **The first screen of README**: what it is, whether it works, how to start
+4. **One prose section, read closely**, usually architecture
 
-## Why the README order is fixed
+## Four repo shapes, four README orders
 
-A reviewer spends about two minutes here. They look at the GIF, skim the
-screenshots, and read exactly one prose section closely: architecture. So the
-demo goes near the top, and the engineering goes after they are already
-convinced the app exists.
+The section order is not universal. It depends on why someone landed on the repo,
+and getting it backwards is the most common way a decent README still fails.
 
-Two sections carry most of the weight, and both are ones a reviewer cannot get
-from a screenshot:
+| Reader arrives wanting to... | Shape | Key rule |
+|---|---|---|
+| Install and use it | Library, package, CLI, MCP server | Install command **above the fold** |
+| Run it, or see what it does | App or tool, source visible | Hero image near the top |
+| Judge whether you can build | Personal or portfolio project | "The hard part" is the main event |
+| Believe an app is real without seeing code | Private app, public landing page | Proof first, engineering second |
 
-**The hard constraint.** Every app has one thing it could not do. Naming that
-limit, and showing how the UI handles it honestly, is the most credible thing on
-the page, because it is the easiest thing to have hidden.
+A hero GIF that pushes `pip install thing` below the fold costs adoption, because
+that reader came to try it. A library README that opens with three paragraphs of
+philosophy loses to the one that opens with a command. Same craft, opposite
+order.
 
-**Architecture.** A mermaid diagram, a service responsibility table, and two to
-four decisions written as: what you did, what the obvious alternative was, and
-what broke when you tried it. A real bug you fixed is worth more than any
-adjective.
+## Audit mode
 
-## What is actually in here
+Before touching anything, survey what is actually missing:
+
+```bash
+~/.claude/skills/gitpretty/scripts/audit.sh --public-only
+```
+
+```
+REPO                         VIS      DESC     TOPICS   LICENSE  README
+--------------------------------------------------------------------------
+GitPretty                    PUBLIC   ok       3        none     ok 5897b
+WidgetLife                   PUBLIC   none     none     none     none
+Medusa                       PUBLIC   ok       none     mit      ok 5815b
+```
+
+Read-only. It never writes, pushes, or edits, so you pick the targets. Works on
+GitHub repos (`gh`) or on a folder of local clones (`--local`).
+
+## What is in here
 
 | File | What it holds |
 |---|---|
-| `SKILL.md` | The workflow, the permission gate, the mermaid gotchas, and the ship checklist |
+| `SKILL.md` | The workflow, mode and shape selection, mermaid gotchas, ship checklist |
+| `references/readme-library.md` | README shape for anything installable |
+| `references/readme-app.md` | README shape for an app or tool, plus the portfolio variant |
+| `references/readme-showcase.md` | README shape for a private app's public page, plus the permission gate |
+| `references/repo-polish.md` | Everything outside the README: description, topics, license, social preview, releases |
 | `references/media.md` | Every ffmpeg and sips command, with the failure modes that make them necessary |
-| `references/readme-template.md` | The eleven-section skeleton, with markup that renders correctly on GitHub |
+| `scripts/audit.sh` | The read-only survey above |
 
 ## The gotchas it encodes
 
 This started as notes taken while building a showcase repo by hand. Everything
-below is something that actually went wrong, which is the reason the skill exists
-rather than a prompt saying "write a nice README":
+below actually went wrong, which is why the skill exists rather than a prompt
+saying "write a nice README":
 
 - **Timestamped filenames lie.** `Simulator Screenshot - ... 16.48.50.png` tells
   you nothing, and two adjacent captures are often the same screen at different
@@ -95,6 +114,8 @@ rather than a prompt saying "write a nice README":
 - **Docs go stale, code does not.** In one pass, an architecture doc was five
   months behind on a retention window: it said 24 hours, `Constants.swift` said
   35 days. Every number on the page gets verified against source
+- **A quickstart that fails on line one** is the most common defect in library
+  READMEs. Run it and paste the real output
 - **A relative `.mp4` in a GitHub README does not produce a player.** The GIF is
   the visible hero; the mp4 is a link underneath
 - **Mermaid breaks only on GitHub.** `<br/>` in node labels runs text together,
@@ -103,6 +124,8 @@ rather than a prompt saying "write a nice README":
   render fine locally
 - **GitHub caches rendered diagrams.** Force-reload before concluding your fix
   did not work
+- **A public repo with no LICENSE is all rights reserved**, which means nobody
+  may legally use it, and a company's legal review stops at the missing file
 - **Feeding a glob of stills straight into `paletteuse` fails** on ffmpeg 8.x
   with "Internal bug, should not have happened." Route through an intermediate
   mp4
@@ -116,19 +139,21 @@ git clone https://github.com/LauraMoney42/GitPretty.git ~/.claude/skills/gitpret
 Then start a new Claude Code session and say what you want:
 
 ```
-build a public showcase repo for my app in ~/Documents/GIT/MyApp
+prettify the repo in ~/Documents/GIT/MyApp
 ```
 
-The skill triggers on its own for showcase repos, portfolio repos, and "something
-I can send a recruiter." You can also invoke it by name with `/gitpretty`.
+It triggers on its own for bare repos, missing READMEs, demo GIFs, architecture
+diagrams, portfolio and showcase repos, and "clean up my GitHub." You can also
+invoke it by name with `/gitpretty`.
 
 Needs [`ffmpeg`](https://ffmpeg.org) for media and [`gh`](https://cli.github.com)
-for the push. `sips` ships with macOS.
+for GitHub metadata. `sips` ships with macOS.
 
 ## About
 
-Built by Laura Money, from notes taken while shipping
-[PhotoHoarder-public](https://github.com/LauraMoney42/PhotoHoarder-public).
+Built by Laura Money, starting from notes taken while shipping
+[PhotoHoarder-public](https://github.com/LauraMoney42/PhotoHoarder-public), then
+generalized to any repo.
 
 The screens in the demo above are that repo's screenshot set, run back through
 the skill's own slideshow recipe.

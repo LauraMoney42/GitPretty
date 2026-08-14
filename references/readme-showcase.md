@@ -1,4 +1,43 @@
-# README template
+# README shape: showcase page for a private app
+
+For a repo whose whole job is to prove an app is real without publishing its
+source. The reader is a hiring manager or a prospective client, they will spend
+about two minutes, and they cannot check anything by running it. So the page
+front-loads proof and back-loads engineering.
+
+## First: is publishing allowed?
+
+Skip this only if the project is entirely the user's own. For anything built for
+an employer or client, the screenshots, architecture, and product decisions are
+usually theirs, not the author's. Ask directly whether permission exists, and if
+the answer is unclear, say so rather than proceeding. A showcase repo that
+causes trouble is worse than no showcase repo.
+
+Three middle grounds when the answer is no or uncertain:
+
+- Describe the problem shape and the decisions without naming the employer,
+  showing their UI, or reproducing their data model
+- Rebuild a small standalone demo of the interesting technique and publish that,
+  which is the author's outright
+- Keep the repo private and share the link directly with interviewers
+
+## Layout
+
+```
+AppName-public/
+  README.md
+  .gitattributes          # *.png *.gif *.mp4 binary
+  media/
+    appname-demo.gif      # hero, autoplays in the README
+    appname-demo.mp4      # full quality, linked not embedded
+  screenshots/
+    gestures.png love.png nope.png keep.png filters.png
+```
+
+Name screenshots for what they show, not `01-`, `02-`. Humans read this README
+and the filenames land in alt text.
+
+## The template
 
 The section order and the markup that actually renders on GitHub. Fill it in
 from the private repo's source, not its docs.
