@@ -11,6 +11,7 @@
   <img alt="Install: one folder" src="https://img.shields.io/badge/install-one%20folder-4CCC93?style=flat-square">
   <img alt="Repo shapes: 4" src="https://img.shields.io/badge/repo%20shapes-4-FD5068?style=flat-square">
   <img alt="Deps: ffmpeg + gh" src="https://img.shields.io/badge/deps-ffmpeg%20%2B%20gh-FFBE4F?style=flat-square">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-1c1c1e?style=flat-square"></a>
 </p>
 
 ---
@@ -148,6 +149,10 @@ invoke it by name with `/gitpretty`.
 
 Needs [`ffmpeg`](https://ffmpeg.org) for media and [`gh`](https://cli.github.com)
 for GitHub metadata. `sips` ships with macOS.
+
+## License
+
+MIT. See [LICENSE](LICENSE). Use it, fork it, change it.
 
 ## About
 
