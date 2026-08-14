@@ -106,7 +106,8 @@ flowchart LR
     App --> Media
     Show --> Media
     Media --> Arch
-    Arch --> Furn
+    Media --> Furn
+    Arch --> Check
     Furn --> Check
     Check --> Live
 
