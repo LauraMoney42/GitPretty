@@ -88,7 +88,14 @@ All ffmpeg and sips commands live in `references/media.md`. Read that file
 before encoding. It covers contact sheets, the mp4 and GIF encodes, the
 slideshow path for when there is no recording, and caption verification.
 
-Three things that matter more than the flags:
+**Encode at 2x the width you will display it at.** GitHub sizes the image from
+the `width=` attribute and every reader is on a Retina screen, so a 540px file
+shown at `width="270"` is crisp where a 270px file is soft. Never upscale past
+the source, and always work from the original recording rather than an
+already-downsized copy, since resizes compound and nothing recovers what the
+first one threw away.
+
+Four things that matter more than the flags:
 
 **A CLI deserves a terminal GIF.** Record an actual session with
 [`vhs`](https://github.com/charmbracelet/vhs) or `asciinema`. A terminal
@@ -105,14 +112,24 @@ the visible hero; the mp4 is a link underneath it. Do not fight this:
 <p align="center"><a href="media/demo.mp4"><b>▶ Watch the full 24-second demo</b></a></p>
 ```
 
+**Two-pass palette, `bayer_scale=5`, and `diff_mode=rectangle`.** Those three
+give a GIF that is sharper, smoother, and smaller than the usual defaults at the
+same time. Error-diffusion dithering (`sierra2_4a`, `floyd_steinberg`) is the
+trap: it looks good on one still and is nine times larger across frames, because
+the noise changes everywhere every frame and inter-frame compression stops
+working.
+
 **Verify what is in each file before captioning it.** Timestamped filenames
 (`Simulator Screenshot - ... 16.48.50.png`) say nothing about content, and two
 adjacent captures are often the same screen at different scroll positions.
 Contact sheet the final set and read it. A caption on the wrong screenshot is
 the kind of error a reviewer catches and the author never does.
 
-Keep the GIF under about 3 MB, since it loads on every page view, and the mp4
-under about 2 MB.
+Keep the GIF under about 3 MB, since it loads on every page view. The mp4 is
+only fetched when someone clicks it, so it can afford real quality: cap the
+width at 1280, use `-crf 20`, and budget up to 5 MB. If a sharp GIF will not fit
+the budget, cut duration before resolution, and see the video-upload escape
+hatch at the end of `references/media.md`.
 
 ## Step 5: the architecture diagram
 
@@ -227,7 +244,8 @@ Each line is something that has actually gone wrong before.
 - [ ] README shape matches why a reader arrives
 - [ ] Every number and API name verified against source, not docs
 - [ ] Install or quickstart command copy-pasteable and actually tried
-- [ ] Media under budget: GIF 3 MB, mp4 2 MB, images 400 KB each
+- [ ] Media encoded at 2x display width, never upscaled past the source
+- [ ] Media under budget: GIF 3 MB, mp4 5 MB, images 400 KB each
 - [ ] Contact sheeted the final image set, every caption matches its file
 - [ ] Mermaid: `flowchart LR`, plain node labels, no single-node subgraphs
 - [ ] No secrets, no internal names, no real personal data
